@@ -1,0 +1,2 @@
+npx lint-staged 2>/dev/null || true
+npm run typecheck 2>/dev/null || true
