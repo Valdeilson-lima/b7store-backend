@@ -15,12 +15,12 @@ model User {
   token     String?
   createdAt DateTime      @default(now())
   updatedAt DateTime      @default(now()) @updatedAt
-  addresses UserAddress[]
   orders    Order[]
+  addresses UserAddress[]
 }
 
 model UserAddress {
-  id         String  @id @default(uuid())
+  id         String   @id @default(uuid())
   userId     String
   zipCode    String
   street     String
@@ -29,11 +29,11 @@ model UserAddress {
   state      String
   country    String
   complement String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+  user       User     @relation(fields: [userId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  user User @relation(fields: [userId], references: [id])
+  @@index([userId], map: "UserAddress_userId_fkey")
 }
 
 model Banner {
@@ -50,14 +50,16 @@ model Product {
   price       Float
   description String?
   categoryId  String
-  category    Category          @relation(fields: [categoryId], references: [id])
   viewsCount  Int               @default(0)
   salesCount  Int               @default(0)
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @default(now()) @updatedAt
+  orders      OrderProduct[]
+  category    Category          @relation(fields: [categoryId], references: [id])
   images      ProductImage[]
   metadata    ProductMetadata[]
-  orders      OrderProduct[]
+
+  @@index([categoryId], map: "Product_categoryId_fkey")
 }
 
 model ProductImage {
@@ -66,8 +68,9 @@ model ProductImage {
   url       String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+  product   Product  @relation(fields: [productId], references: [id])
 
-  product Product @relation(fields: [productId], references: [id])
+  @@index([productId], map: "ProductImage_productId_fkey")
 }
 
 model ProductMetadata {
@@ -77,40 +80,42 @@ model ProductMetadata {
   metadataValueId    String
   createdAt          DateTime @default(now())
   updatedAt          DateTime @default(now()) @updatedAt
+  product            Product  @relation(fields: [productId], references: [id])
 
-  product Product @relation(fields: [productId], references: [id])
+  @@index([productId], map: "ProductMetadata_productId_fkey")
 }
 
 model Category {
-  id        String   @id @default(uuid())
-  slug      String   @unique
+  id        String             @id @default(uuid())
+  slug      String             @unique
   name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  products Product[]
-  metadata CategoryMetadata[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @default(now()) @updatedAt
+  metadata  CategoryMetadata[]
+  products  Product[]
 }
 
 model CategoryMetadata {
-  id         String   @id @default(uuid())
+  id         String          @id @default(uuid())
   categoryId String
   name       String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @default(now()) @updatedAt
+  category   Category        @relation(fields: [categoryId], references: [id])
+  values     MetadataValue[]
 
-  category Category        @relation(fields: [categoryId], references: [id])
-  values   MetadataValue[]
+  @@index([categoryId], map: "CategoryMetadata_categoryId_fkey")
 }
 
 model MetadataValue {
-  id                 String   @id @default(uuid())
+  id                 String           @id @default(uuid())
   categoryMetadataId String
   value              String
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @default(now()) @updatedAt
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @default(now()) @updatedAt
+  categoryMetadata   CategoryMetadata @relation(fields: [categoryMetadataId], references: [id])
 
-  categoryMetadata CategoryMetadata @relation(fields: [categoryMetadataId], references: [id])
+  @@index([categoryMetadataId], map: "MetadataValue_categoryMetadataId_fkey")
 }
 
 model Order {
@@ -129,9 +134,10 @@ model Order {
   shippingComplement String?
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @default(now()) @updatedAt
+  user               User           @relation(fields: [userId], references: [id])
   orderItems         OrderProduct[]
 
-  user User @relation(fields: [userId], references: [id])
+  @@index([userId], map: "Order_userId_fkey")
 }
 
 model OrderProduct {
@@ -142,7 +148,9 @@ model OrderProduct {
   price     Float
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
 
-  order   Order   @relation(fields: [orderId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  @@index([orderId], map: "OrderProduct_orderId_fkey")
+  @@index([productId], map: "OrderProduct_productId_fkey")
 }
