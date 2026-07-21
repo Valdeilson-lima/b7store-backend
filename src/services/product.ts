@@ -124,3 +124,35 @@ export const incrementProductViews = async (id: string) => {
     },
   });
 };
+
+export const getProductsFromSameCategory = async (id: string, limit?: number) => {
+  const products = await prisma.product.findMany({
+    where: {
+      categoryId: (await getProduct(id))?.categoryId,
+      NOT: {
+        id,
+      },
+    },
+    select: {
+      id: true,
+      label: true,
+      price: true,
+      images: {
+        take: 1,
+        orderBy: {
+          id: "asc",
+        },
+      },
+    },
+    take: limit ?? undefined,
+    orderBy: {
+      viewsCount: "desc",
+    },
+  });
+
+  return products.map((product) => ({
+    ...product,
+    image: product.images[0] ? `media/products/${product.images[0].url}` : null,
+    images: undefined,
+  }));
+};
