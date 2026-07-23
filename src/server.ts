@@ -12,7 +12,11 @@ server.use("/api", routes);
 
 server.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
-  res.status(500).json({ error: "Internal Server Error" });
+  
+  const statusCode = err.statusCode || err.status || 500;
+  const message = err.message || "Internal Server Error";
+  
+  res.status(statusCode).json({ error: message });
 });
 
 server.listen(process.env.PORT, () => {
