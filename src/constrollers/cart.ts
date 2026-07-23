@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 import { cartMountSchema } from "../schemas/cart-mount-schema";
 import { getProduct } from "../services/product";
 import { getAbsoluteImageUrl } from "../utils/get-absolut-image-url";
+import { calculateShippingSchema } from "../schemas/calculate-sipping-schema";
 
 export const cartMount = async (req: Request, res: Response) => {
   const parseResult = cartMountSchema.safeParse(req.body);
@@ -30,3 +31,16 @@ export const cartMount = async (req: Request, res: Response) => {
 
   return res.json({ error: null, products });
 };
+
+
+
+export const calculateShipping = async (req: Request, res: Response) => {
+  const parseResult = calculateShippingSchema.safeParse(req.query);
+
+  if (!parseResult.success) {
+    return res.status(400).json({ error: "Dados inválidos" });
+  }
+
+  const { zipcode } = parseResult.data;
+  return res.json({ error: null, zipcode, cost: 7, days: 5 });
+}

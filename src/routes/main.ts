@@ -20,3 +20,4 @@ routes.get(
 );
 
 routes.post("/cart/mount", cartController.cartMount);
+routes.get("/cart/shipping", cartController.calculateShipping);
