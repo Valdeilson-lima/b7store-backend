@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as bannersController from "../constrollers/banners";
 import * as productsController from "../constrollers/product";
 import * as categoryController from "../constrollers/category";
+import * as cartController from "../constrollers/cart";
 
 export const routes = Router();
 
@@ -17,3 +18,5 @@ routes.get(
   "/category/:slug/metadata",
   categoryController.getCategoryWithMetadata,
 );
+
+routes.post("/cart/mount", cartController.cartMount);
