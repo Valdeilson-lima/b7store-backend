@@ -98,7 +98,6 @@ export const getUserByToken = async (token: string) => {
   };
 };
 
-
 export interface Address {
   zipcode: string;
   street: string;
@@ -108,10 +107,6 @@ export interface Address {
   country: string;
   complement?: string;
 }
-
-
-
-
 
 export const addAddressToUser = async (userId: string, address: Address) => {
   const user = await prisma.user.findUnique({
@@ -140,4 +135,26 @@ export const addAddressToUser = async (userId: string, address: Address) => {
   }
 
   return addAddress;
-}
+};
+
+export const getUserAddresses = async (userId: string) => {
+  const user = await prisma.userAddress.findMany({
+    where: { userId },
+    select: {
+      id: true,
+      zipCode: true,
+      street: true,
+      number: true,
+      city: true,
+      state: true,
+      country: true,
+      complement: true,
+    },
+  });
+
+  if (!user) {
+    throw new AppError("Endereços não encontrados", 404);
+  }
+
+  return user;
+};
