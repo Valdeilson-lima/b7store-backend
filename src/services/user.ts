@@ -81,3 +81,63 @@ export const logUser = async (email: string, password: string) => {
     token,
   };
 };
+
+export const getUserByToken = async (token: string) => {
+  const user = await prisma.user.findFirst({
+    where: { token },
+  });
+
+  if (!user) {
+    throw new AppError("Usuário não encontrado", 404);
+  }
+
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+  };
+};
+
+
+export interface Address {
+  zipcode: string;
+  street: string;
+  number: string;
+  city: string;
+  state: string;
+  country: string;
+  complement?: string;
+}
+
+
+
+
+
+export const addAddressToUser = async (userId: string, address: Address) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new AppError("Usuário não encontrado", 404);
+  }
+
+  const addAddress = await prisma.userAddress.create({
+    data: {
+      userId,
+      zipCode: address.zipcode,
+      street: address.street,
+      number: address.number,
+      city: address.city,
+      state: address.state,
+      country: address.country,
+      complement: address.complement || null,
+    },
+  });
+
+  if (!addAddress) {
+    throw new AppError("Erro ao adicionar endereço", 500);
+  }
+
+  return addAddress;
+}

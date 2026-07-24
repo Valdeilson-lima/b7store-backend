@@ -4,6 +4,7 @@ import * as productsController from "../constrollers/product";
 import * as categoryController from "../constrollers/category";
 import * as cartController from "../constrollers/cart";
 import * as userController from "../constrollers/user";
+import { authMiddleware } from "../middlewere/auth";
 
 export const routes = Router();
 
@@ -24,3 +25,4 @@ routes.post("/cart/mount", cartController.cartMount);
 routes.get("/cart/shipping", cartController.calculateShipping);
 routes.post("/user/register", userController.register);
 routes.post("/user/login", userController.login);
+routes.post("/user/address", authMiddleware, userController.addAddress);
