@@ -158,3 +158,25 @@ export const getUserAddresses = async (userId: string) => {
 
   return user;
 };
+
+export const getAddressById = async (userId: string, addressId: string) => {
+  const address = await prisma.userAddress.findFirst({
+    where: { id: addressId, userId },
+    select: {
+      id: true,
+      zipCode: true,
+      street: true,
+      number: true,
+      city: true,
+      state: true,
+      country: true,
+      complement: true,
+    },
+  });
+
+  if (!address) {
+    throw new AppError("Endereço não encontrado", 404);
+  }
+
+  return address;
+};

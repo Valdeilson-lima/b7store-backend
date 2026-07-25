@@ -27,3 +27,4 @@ routes.post("/user/register", userController.register);
 routes.post("/user/login", userController.login);
 routes.post("/user/address", authMiddleware, userController.addAddress);
 routes.get("/user/address", authMiddleware, userController.getAddresses);
+routes.post("/cart/finish", authMiddleware, cartController.cartFinish);
