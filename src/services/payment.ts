@@ -1,4 +1,7 @@
-import { createStripeCheckoutSession } from "../lib/stripe";
+import {
+  createStripeCheckoutSession,
+  getStripeCheckoutSession,
+} from "../lib/stripe";
 import { cartItem } from "../types/cart-itens";
 
 interface CreatePaymentLinkResponse {
@@ -25,5 +28,18 @@ export const createPaymentlink = async ({
   } catch (error) {
     console.error("Error creating Stripe checkout session:", error);
     throw new Error("Failed to create Stripe checkout session");
+  }
+};
+
+export const getOrderIdFromSession = async (sessionId: string) => {
+  try {
+    const session = await getStripeCheckoutSession(sessionId);
+    if (!session) {
+      return null;
+    }
+    const orderId = session.metadata?.orderId;
+    return orderId || null;
+  } catch (error) {
+    throw new Error("Failed to retrieve Stripe checkout session");
   }
 };

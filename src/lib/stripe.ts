@@ -86,3 +86,14 @@ export const getConstructEvent = (
     throw new Error("Failed to construct Stripe event");
   }
 };
+
+
+export const getStripeCheckoutSession = async (sessionId: string): Promise<Stripe.Checkout.Session | null> => {
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    return session;
+  } catch (error) {
+    console.error("Error retrieving Stripe checkout session:", error);
+    return null;
+  }
+};
