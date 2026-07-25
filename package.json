@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "tsx watch --env-file=.env src/server.ts",
     "prepare": "husky",
-    "seed": "tsx --env-file=.env prisma/seed.ts"
+    "seed": "tsx --env-file=.env prisma/seed.ts",
+    "stripe:listen": "stripe listen --forward-to localhost:3000/webhook/stripe"
   },
   "prisma": {
     "seed": "tsx --env-file=.env prisma/seed.ts"

@@ -4,6 +4,11 @@ import { cartItem } from "../types/cart-itens";
 import { getStripeSecret } from "../utils/get-stripe-secret";
 import { getFrontendUrl } from "../utils/get-frontend-url";
 
+const stripeSecretKey = getStripeSecret();
+const stripe = new Stripe(stripeSecretKey, {
+  apiVersion: "2026-06-24.dahlia",
+});
+
 interface StripeCheckoutSessionParams {
   cart: cartItem[];
   shippingCost: number;
@@ -52,11 +57,6 @@ export const createStripeCheckoutSession = async ({
     });
   }
 
-  const stripeSecretKey = getStripeSecret();
-  const stripe = new Stripe(stripeSecretKey, {
-    apiVersion: "2026-06-24.dahlia",
-  });
-
   const session = await stripe.checkout.sessions.create({
     line_items: stripeLineItems,
     mode: "payment",
@@ -72,4 +72,17 @@ export const createStripeCheckoutSession = async ({
   }
 
   return session.url;
+};
+
+export const getConstructEvent = (
+  rowBody: string,
+  sig: string,
+  webhookSecret: string,
+): Stripe.Event => {
+  try {
+    return stripe.webhooks.constructEvent(rowBody, sig, webhookSecret);
+  } catch (error) {
+    console.error("Error constructing Stripe event:", error);
+    throw new Error("Failed to construct Stripe event");
+  }
 };

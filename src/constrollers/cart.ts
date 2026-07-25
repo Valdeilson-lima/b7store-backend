@@ -6,6 +6,7 @@ import { calculateShippingSchema } from "../schemas/calculate-sipping-schema";
 import { cartFinishSchema } from "../schemas/cart-finish-schema";
 import { getAddressById } from "../services/user";
 import { createOrder } from "../services/order";
+import { createPaymentlink } from "../services/payment";
 
 export const cartMount = async (req: Request, res: Response) => {
   const parseResult = cartMountSchema.safeParse(req.body);
@@ -81,7 +82,15 @@ export const cartFinish = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Erro ao finalizar pedido" });
   }
 
-  let url = ""
+  let url = await createPaymentlink({
+    cart,
+    shippingCost,
+    orderId,
+  });
+
+  if (!url) {
+    return res.status(500).json({ error: "Erro ao criar link de pagamento" });
+  }
 
   return res.status(201).json({
     error: null,

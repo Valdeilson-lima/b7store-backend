@@ -71,3 +71,18 @@ export const createOrder = async ({
 
   return order.id;
 };
+
+
+
+export const updateOrderStatus = async (orderId: string, status: 'paid' | 'cancelled') => {
+  const order = await prisma.order.update({
+    where: { id: orderId },
+    data: { status },
+  });
+
+  if (!order) {
+    throw new Error(`Pedido com ID ${orderId} não encontrado`);
+  }
+
+  return order;
+};
