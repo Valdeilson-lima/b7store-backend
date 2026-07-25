@@ -48,10 +48,11 @@ export const calculateShipping = async (req: Request, res: Response) => {
 };
 
 export const cartFinish = async (req: Request, res: Response) => {
-  const userId = (req as any).user.id;
-  if (!userId) {
+  const user = (req as any).user;
+  if (!user || !user.id) {
     return res.status(401).json({ error: "Usuário não autenticado" });
   }
+  const userId = user.id;
 
   const parseResult = cartFinishSchema.safeParse(req.body);
 

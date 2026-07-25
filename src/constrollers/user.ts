@@ -50,10 +50,11 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const addAddress = async (req: Request, res: Response) => {
-  const userId = (req as any).user.id;
-  if (!userId) {
+  const user = (req as any).user;
+  if (!user || !user.id) {
     return res.status(401).json({ error: "Usuário não autenticado" });
   }
+  const userId = user.id;
 
   const address = req.body.address || req.body;
   console.log("Address received:", address);
@@ -93,10 +94,11 @@ export const addAddress = async (req: Request, res: Response) => {
 };
 
 export const getAddresses = async (req: Request, res: Response) => {
-  const userId = (req as any).user.id;
-  if (!userId) {
+  const user = (req as any).user;
+  if (!user || !user.id) {
     return res.status(401).json({ error: "Usuário não autenticado" });
   }
+  const userId = user.id;
 
   const addresses = await getUserAddresses(userId);
 

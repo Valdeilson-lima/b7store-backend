@@ -72,9 +72,10 @@ export const createOrder = async ({
   return order.id;
 };
 
-
-
-export const updateOrderStatus = async (orderId: string, status: 'paid' | 'cancelled') => {
+export const updateOrderStatus = async (
+  orderId: string,
+  status: "paid" | "cancelled",
+) => {
   const order = await prisma.order.update({
     where: { id: orderId },
     data: { status },
@@ -86,3 +87,73 @@ export const updateOrderStatus = async (orderId: string, status: 'paid' | 'cance
 
   return order;
 };
+
+export const getUserOrders = async (userId: string) => {
+  const orders = await prisma.order.findMany({
+    where: { userId },
+    select: {
+      id: true,
+      status: true,
+      total: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return orders;
+};
+
+export const getOrderById = async (orderId: string, userId: string) => {
+  const order = await prisma.order.findFirst({
+    where: { id: orderId, userId },
+    select: {
+      id: true,
+      status: true,
+      total: true,
+      shippingCost: true,
+      shippingDays: true,
+      shippingZipCode: true,
+      shippingStreet: true,
+      shippingNumber: true,
+      shippingCity: true,
+      shippingState: true,
+      shippingCountry: true,
+      shippingComplement: true,
+      createdAt: true,
+      orderItems: {
+        select: {
+          productId: true,
+          quantity: true,
+          price: true,
+          product: {
+            select: {
+              label: true,
+              price: true,
+              images: {
+                take: 1,
+                orderBy: { id: "asc" },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!order) {
+    throw new Error(`Pedido com ID ${orderId} não encontrado para o usuário ${userId}`);
+  }
+
+  return {
+    ...order,
+    orderItems: order.orderItems.map((item) => ({
+      ...item,
+      product: {
+        ...item.product,
+        image: item.product.images[0]? `media/${item.product.images[0].url}` : null,
+        images: undefined, 
+      },
+    })),
+  };
+};
+  

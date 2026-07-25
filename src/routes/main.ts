@@ -32,3 +32,5 @@ routes.get("/user/address", authMiddleware, userController.getAddresses);
 routes.post("/cart/finish", authMiddleware, cartController.cartFinish);
 routes.post("/webhook/stripe", webhookController.stripeWebhook);
 routes.get("/orders/session", orderController.getOrderBySessionId);
+routes.get("/orders", authMiddleware, orderController.listOrders);
+routes.get("/orders/:id", authMiddleware, orderController.getOrder);
